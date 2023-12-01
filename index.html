@@ -7,7 +7,6 @@
     <h1>24点游戏</h1>
     <button id="generateButton">出题</button>
     <input type="text" id="resultBox" readonly>
-    
     <button id="answerButton">答案</button>
     <textarea id="answerBox" rows="5" cols="30" readonly></textarea>
 
@@ -18,34 +17,73 @@
         var answerButton = document.getElementById("answerButton");
         var answerBox = document.getElementById("answerBox");
 
+        // 生成混合运算步骤函数
+        function generateMixedOperations(numbers) {
+            if (numbers.length === 1) {
+                if (Math.abs(numbers[0] - 24) < 0.0001) {
+                    return numbers[0].toString();
+                } else {
+                    return "无法解答";
+                }
+            }
+
+            for (var i = 0; i < numbers.length; i++) {
+                for (var j = i + 1; j < numbers.length; j++) {
+                    var a = numbers[i];
+                    var b = numbers[j];
+                    var rest = numbers.slice(0, i).concat(numbers.slice(i + 1, j), numbers.slice(j + 1));
+
+                    var operations = [
+                        a + " + " + b,
+                        a - b,
+                        b - a,
+                        a + " * " + b, // 乘法运算
+                        a / b,         // 除法运算
+                        b / a          // 除法运算
+                    ];
+
+                    for (var k = 0; k < operations.length; k++) {
+                        var expression = operations[k];
+                        var newNumbers = [eval(expression)].concat(rest);
+                        var result = generateMixedOperations(newNumbers);
+                        if (result !== "无法解答") {
+                            return expression + " = " + result;
+                        }
+                    }
+                }
+            }
+
+            return "无法解答";
+        }
+
         // 添加点击出题按钮事件处理程序
         generateButton.addEventListener("click", function() {
-            // 生成四个随机的数字
-            var number1 = Math.floor(Math.random() * 10) + 1; // 生成1到10之间的随机数
-            var number2 = Math.floor(Math.random() * 10) + 1;
-            var number3 = Math.floor(Math.random() * 10) + 1;
-            var number4 = Math.floor(Math.random() * 10) + 1;
+            // 生成四个随机的自然数（小于10）
+            var number1 = Math.floor(Math.random() * 9) + 1; // 生成1到9之间的随机数
+            var number2 = Math.floor(Math.random() * 9) + 1;
+            var number3 = Math.floor(Math.random() * 9) + 1;
+            var number4 = Math.floor(Math.random() * 9) + 1;
+
+            // 创建题目字符串
+            var expression = number1 + " " + number2 + " " + number3 + " " + number4;
 
             // 在文本框中显示题目
-            resultBox.value = number1 + " + " + number2 + " + " + number3 + " + " + number4;
+            resultBox.value = expression;
         });
 
         // 添加点击答案按钮事件处理程序
         answerButton.addEventListener("click", function() {
             // 获取出题文本框中的内容
             var expression = resultBox.value;
+            var numbers = expression.split(" ").map(function (num) {
+                return parseFloat(num);
+            });
+
+            // 生成混合运算步骤
+            var answer = generateMixedOperations(numbers);
             
-            // 尝试计算答案
-            try {
-                var answer = eval(expression);
-                if (answer === 24) {
-                    answerBox.value = "可以解答！\n具体步骤：" + expression;
-                } else {
-                    answerBox.value = "无法解答";
-                }
-            } catch (error) {
-                answerBox.value = "无法解答";
-            }
+            // 显示解题思路
+            answerBox.value = "解题思路：\n" + answer;
         });
     </script>
 </body>
