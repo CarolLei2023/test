@@ -35,11 +35,11 @@
 
                     var operations = [
                         a + " + " + b,
-                        a - b,
-                        b - a,
+                        a + " - " + b, // 减法运算
+                        b + " - " + a, // 减法运算
                         a + " * " + b, // 乘法运算
-                        a / b,         // 除法运算
-                        b / a          // 除法运算
+                        a + " / " + b, // 除法运算
+                        b + " / " + a  // 除法运算
                     ];
 
                     for (var k = 0; k < operations.length; k++) {
@@ -83,10 +83,16 @@
             var answer = generateMixedOperations(numbers);
             
             // 显示解题思路
-            answerBox.value = "解题思路：\n" + answer;
+            var steps = answer.split(" = ");
+            answerBox.value = "解题思路：\n";
+            var currentNumber = numbers.join(" ");
+            for (var i = 0; i < steps.length; i++) {
+                answerBox.value += currentNumber + "\n";
+                answerBox.value += steps[i] + "\n";
+                currentNumber = steps[i].trim();
+            }
         });
     </script>
 </body>
 </html>
-
 
