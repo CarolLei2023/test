@@ -2,11 +2,37 @@
 <html>
 <head>
     <title>24点游戏</title>
+	<style>
+	 @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .blinking {
+            animation: blink 1s linear infinite;
+        }
+        #generateButton, #answerButton {
+            font-size: 20px; /* 将字体大小设置为20像素 */
+			background-color: skyblue; /* 设置按钮背景为天蓝色 */
+			width: 80px; /* 设置resultBox的宽度 */
+            height: 30px; /* 设置resultBox的高度 */
+        }
+		 #resultBox {
+            width: 300px; /* 设置resultBox的宽度 */
+            height: 30px; /* 设置resultBox的高度 */
+			font-size: 18px; /* 设置resultBox的字体大小为18像素 */
+			 }
+        #answerBox {
+            width: 300px; /* 设置answerBox的宽度 */
+            height: 200px; /* 设置answerBox的高度 */
+			font-size: 18px; /* 设置resultBox的字体大小为18像素 */
+        }
+    </style>
 </head>
 <body>
-    <h1>24点游戏</h1>
+    
+	<h1>24点游戏</h1>
     <button id="generateButton">出题</button>
-    <input type="text" id="resultBox" readonly>
+    <input type="text" id="resultBox" readonly><br><br>
     <button id="answerButton">答案</button>
     <textarea id="answerBox" rows="5" cols="30" readonly></textarea>
 
@@ -34,11 +60,9 @@
                     var rest = numbers.slice(0, i).concat(numbers.slice(i + 1, j), numbers.slice(j + 1));
 
                     var operations = [
-                        a + " + " + b,
+                        a + " + " + b, // 加法运算
                         a + " - " + b, // 减法运算
-                        b + " - " + a, // 减法运算
                         a + " * " + b, // 乘法运算
-                        a + " / " + b, // 除法运算
                         b + " / " + a  // 除法运算
                     ];
 
@@ -71,27 +95,33 @@
             resultBox.value = expression;
         });
 
-        // 添加点击答案按钮事件处理程序
-        answerButton.addEventListener("click", function() {
-            // 获取出题文本框中的内容
-            var expression = resultBox.value;
-            var numbers = expression.split(" ").map(function (num) {
-                return parseFloat(num);
-            });
+// 添加点击答案按钮事件处理程序
+answerButton.addEventListener("click", function() {
+    // 获取出题文本框中的内容
+    var expression = resultBox.value;
+    var numbers = expression.split(" ").map(function (num) {
+        return parseFloat(num);
+    });
 
-            // 生成混合运算步骤
-            var answer = generateMixedOperations(numbers);
-            
-            // 显示解题思路
-            var steps = answer.split(" = ");
-            answerBox.value = "解题思路：\n";
-            var currentNumber = numbers.join(" ");
-            for (var i = 0; i < steps.length; i++) {
-                answerBox.value += currentNumber + "\n";
-                answerBox.value += steps[i] + "\n";
-                currentNumber = steps[i].trim();
-            }
-        });
+    // 生成混合运算步骤
+    var answer = generateMixedOperations(numbers);
+    
+    // 显示解题思路
+    if (answer === "无法解答") {
+        answerBox.value = "解题思路：\n无法解答";
+    } else {
+        var steps = answer.split(" = ");
+        answerBox.value = "解题思路：\n";
+        for (var i = 0; i < steps.length - 1; i++) { // 循环到倒数第二个元素
+            answerBox.value += steps[i] + " = ";
+            // 更新 currentNumber 为当前步骤的结果
+            var currentNumber = eval(steps[i].trim());
+            answerBox.value += currentNumber + "\n";
+        }
+        answerBox.value += "最终结果: " + steps[steps.length - 1]; // 添加最终结果
+    }
+});
+
     </script>
 </body>
 </html>
